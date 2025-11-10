@@ -1,5 +1,5 @@
 # 💫 About Me:
-Institute: IIIT Nagpur<br>Program: B.Tech in Data Science and Analytics<br>Year: 2nd Year<br>Projects: Gym website<br>Current Learning: Solana and Web3 (as part of a cohort)<br><br>"I’m a tech enthusiast who’s not just coding for data science but also diving<br> into the future of decentralized technology with Solana and Web3.<br> Plus, I’ve built a gym website, proving that I’m all about<br> staying fit—both in the virtual and real world!
+Institute: IIIT Nagpur<br>Program: B.Tech in Data Science and Analytics<br>Year: 2nd Year<br>Projects: <br>Current Learning: Solana and Web3 (as part of a cohort)<br><br>"I’m a tech enthusiast who’s not just coding for data science but also diving<br> into the future of decentralized technology with Solana and Web3.<br> Plus, I’ve built a gym website, proving that I’m all about<br> staying fit—both in the virtual and real world!
 
 
 ## 🌐 Socials:
