@@ -29,16 +29,24 @@
 # 🚀 Featured Projects
 
 ### 🧠 [Callosum](https://github.com/Cloverag/callosum) — Institutional Memory
-> An AI knowledge layer combining a **Neo4j** knowledge graph, **pgvector** semantic search, and **Claude** for grounded retrieval over organizational decisions. Final year project.
+> **What** &nbsp;·&nbsp; An AI knowledge layer for grounded retrieval over organizational decisions
+>
+> **Stack** &nbsp;·&nbsp; Neo4j knowledge graph + pgvector semantic search + Claude &nbsp;·&nbsp; 🎓 Final Year Project
 
 ### 🌐 [Portfolio](https://github.com/Cloverag/portfolio)
-> Interactive developer portfolio built with **Next.js, TypeScript & WebGL**
+> **What** &nbsp;·&nbsp; Interactive developer portfolio with a live shader-gradient background & 3D scenes
+>
+> **Stack** &nbsp;·&nbsp; Next.js · TypeScript · Three.js / WebGL · Framer Motion
 
 ### 🛡️ [Offensive Security Scripts](https://github.com/Cloverag/offensive-security-scripts)
-> A growing toolkit of **Python** scripts for recon, exploitation, and hands-on security learning
+> **What** &nbsp;·&nbsp; A growing toolkit for recon, exploitation & hands-on security learning
+>
+> **Stack** &nbsp;·&nbsp; Python
 
-### 🕳 [Pothole Detection System](https://github.com/Cloverag/Pothole-Detection-System)
-> AI-powered road damage detection using **PyTorch, OpenCV, Flask & React**
+### 🕳️ [Pothole Detection System](https://github.com/Cloverag/Pothole-Detection-System)
+> **What** &nbsp;·&nbsp; AI-powered road damage detection
+>
+> **Stack** &nbsp;·&nbsp; PyTorch · OpenCV · Flask · React
 
 ---
 
