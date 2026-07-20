@@ -12,12 +12,17 @@
 
 ## 🌟 About Me
 
-- 🎓 Pursuing **B.Tech in Data Science & Analytics** at **IIIT Nagpur**
-- 🧠 Building **AI knowledge systems** — knowledge graphs + vector search + LLMs for grounded retrieval
-- 🛡️ Exploring **DevSecOps & offensive security** — attacking my own infra to learn how to defend it
-- ⚡ Shipping across **Computer Vision, Data Analytics, and Full Stack Development**
-- 🛠 Love turning ideas into real-world products
-- 🎮 Tech + Creativity + Design = My Playground
+> 🎓 &nbsp; **Education** &nbsp;·&nbsp; B.Tech in Data Science & Analytics @ **IIIT Nagpur**
+>
+> 🧠 &nbsp; **Building** &nbsp;·&nbsp; AI knowledge systems — knowledge graphs + vector search + LLMs for grounded retrieval
+>
+> 🛡️ &nbsp; **Security** &nbsp;·&nbsp; DevSecOps & offensive security — attacking my own infra to learn how to defend it
+>
+> ⚡ &nbsp; **Shipping** &nbsp;·&nbsp; Computer Vision, Data Analytics & Full-Stack Development
+>
+> 🛠️ &nbsp; **Mindset** &nbsp;·&nbsp; turning ideas into real-world products
+>
+> 🎮 &nbsp; **Fuel** &nbsp;·&nbsp; Tech + Creativity + Design = my playground
 
 ---
 
