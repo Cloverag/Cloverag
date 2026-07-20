@@ -2,9 +2,9 @@
 
 <div align="center">
 
-### 🚀 Data Science & Full Stack Developer  
-🎓 B.Tech in Data Science & Analytics @ IIIT Nagpur  
-📍 Third Year Student | Web3 Enthusiast | AI Builder  
+### 🚀 AI / Data Science & Full Stack Developer
+🎓 B.Tech in Data Science & Analytics @ IIIT Nagpur
+📍 Final Year Student | AI & RAG Systems | Security Enthusiast
 
 </div>
 
@@ -13,9 +13,9 @@
 ## 🌟 About Me
 
 - 🎓 Pursuing **B.Tech in Data Science & Analytics** at **IIIT Nagpur**
-- 🧠 Currently exploring **AI, Machine Learning, and Web3**
-- ⚡ Building projects in **Computer Vision, Data Analytics, and Full Stack Development**
-- 🔥 Interested in **Solana, Blockchain, and Decentralized Applications**
+- 🧠 Building **AI knowledge systems** — knowledge graphs + vector search + LLMs for grounded retrieval
+- 🛡️ Exploring **DevSecOps & offensive security** — attacking my own infra to learn how to defend it
+- ⚡ Shipping across **Computer Vision, Data Analytics, and Full Stack Development**
 - 🛠 Love turning ideas into real-world products
 - 🎮 Tech + Creativity + Design = My Playground
 
@@ -23,17 +23,17 @@
 
 # 🚀 Featured Projects
 
-### 🛣 Delivery Optimization System
-> Optimized delivery routes using **Dijkstra** and **Bellman-Ford Algorithms**
+### 🧠 [Callosum](https://github.com/Cloverag/callosum) — Institutional Memory
+> An AI knowledge layer combining a **Neo4j** knowledge graph, **pgvector** semantic search, and **Claude** for grounded retrieval over organizational decisions. Final year project.
 
-### 🕳 Pothole Detection System
+### 🌐 [Portfolio](https://github.com/Cloverag/portfolio)
+> Interactive developer portfolio built with **Next.js, TypeScript & WebGL**
+
+### 🛡️ [Offensive Security Scripts](https://github.com/Cloverag/offensive-security-scripts)
+> A growing toolkit of **Python** scripts for recon, exploitation, and hands-on security learning
+
+### 🕳 [Pothole Detection System](https://github.com/Cloverag/Pothole-Detection-System)
 > AI-powered road damage detection using **PyTorch, OpenCV, Flask & React**
-
-### 🌱 Renewable Energy Analytics
-> Interactive energy analysis dashboard using **Power BI, Streamlit & React**
-
-### 🏨 Hotel Management System
-> OOP-based management system built with **C++**
 
 ---
 
@@ -43,8 +43,8 @@
 
 ### Languages
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 ![C++](https://img.shields.io/badge/C++-00599C?style=for-the-badge&logo=cplusplus&logoColor=white)
-![Java](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-323330?style=for-the-badge&logo=javascript&logoColor=F7DF1E)
 
 ### Frontend
@@ -54,8 +54,9 @@
 
 ### Backend & Databases
 ![NodeJS](https://img.shields.io/badge/Node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)
-![Express.js](https://img.shields.io/badge/Express.js-404d59?style=for-the-badge&logo=express&logoColor=61DAFB)
 ![Flask](https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
+![Neo4j](https://img.shields.io/badge/Neo4j-4581C3?style=for-the-badge&logo=neo4j&logoColor=white)
 
 ### AI / Data Science
 ![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)
@@ -64,8 +65,9 @@
 
 ### Tools & Platforms
 ![Git](https://img.shields.io/badge/Git-F05033?style=for-the-badge&logo=git&logoColor=white)
-![GitHub](https://img.shields.io/badge/GitHub-121011?style=for-the-badge&logo=github&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 ![AWS](https://img.shields.io/badge/AWS-FF9900?style=for-the-badge&logo=amazonaws&logoColor=white)
+![Linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black)
 
 </div>
 
@@ -101,6 +103,6 @@
 
 <div align="center">
 
-### ✨ “Building cool stuff while learning every day.” ✨
+### ✨ "Building cool stuff while learning every day." ✨
 
 </div>
