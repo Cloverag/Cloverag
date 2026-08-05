@@ -23,17 +23,11 @@ These outputs are committed and regenerated only when you want them to change:
     # section headings
     python3 scripts/generate_headings.py
 
-    # the three header pieces, as they currently stand
+    # the header portrait, as it currently stands
     python3 scripts/generate_portrait.py "Green pfp (!.jpeg" \
         --crop 0.24,0.03,0.70,0.50 --flood 14 --blank 1 \
-        --colour --cols 60 --width 270 --name face \
+        --colour --cols 90 --width 460 --name face \
         --contrast 14 --band 0.28,0.86 --saturation 1.6
-
-    python3 scripts/generate_portrait.py Knight_16.webp \
-        --colour --cols 60 --width 270 --name knight
-
-    python3 scripts/generate_portrait.py _.jpeg --blur 6 \
-        --colour --cols 60 --width 270 --name eye
 
 ## what GitHub allows
 
@@ -138,10 +132,17 @@ Three were tried. What decided it:
                      wash out on one ground or the other
     --saturation X   saturation multiplier on the sampled colours
 
-`face` needs `--flood 14`, because the backdrop is a flat light green that a
-corner flood separates cleanly. `knight` needs nothing — it ships its own alpha
-channel, which is used directly. `eye` needs `--blur 6`, because it is a
-halftone and the dots alias into an even grey field without it.
+The portrait needs `--flood 14`, because the backdrop is a flat light green
+that a corner flood separates cleanly.
+
+Two other sources were tried and dropped. A pixel-art sprite needed no masking
+at all — it ships its own alpha channel, which `cutout()` uses directly — but
+at 240px each sprite pixel became about three characters, so every edge came
+out as a blocky triple. A halftone close-up needed `--blur 6`, because the dot
+screen aliases against the character grid; even low-passed it averaged toward
+an even field, which is what a halftone does when you take the dots away.
+Both paths are still in the code and work; the images just did not earn their
+place on the page.
 
 ## do I have to run anything on a schedule?
 

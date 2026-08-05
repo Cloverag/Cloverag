@@ -1,4 +1,4 @@
-<img src="assets/face.svg" width="270" alt="portrait, drawn in ASCII"><img src="assets/knight.svg" width="270" alt="knight sprite, drawn in ASCII"><img src="assets/eye.svg" width="270" alt="halftone eye, drawn in ASCII">
+<img src="assets/face.svg" width="460" alt="portrait, drawn in ASCII">
 
 > B.Tech in Data Science &amp; Analytics at IIIT Nagpur, final year.
 > I build AI knowledge systems — knowledge graphs, vector search and LLMs
