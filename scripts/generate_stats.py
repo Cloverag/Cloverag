@@ -56,7 +56,7 @@ query($login:String!, $from:DateTime!, $to:DateTime!, $cursor:String) {
         name
         stargazerCount
         languages(first:12, orderBy:{field:SIZE, direction:DESC}) {
-          edges { size node { name } }
+          edges { size node { name color } }
         }
       }
     }
@@ -167,17 +167,24 @@ def languages(repos: list[dict], top: int = 6):
     """
     by_bytes: dict[str, int] = {}
     by_repo: dict[str, int] = {}
+    colours: dict[str, str] = {}
     for repo in repos:
         edges = repo["languages"]["edges"]
         for e in edges:
-            by_bytes[e["node"]["name"]] = by_bytes.get(e["node"]["name"], 0) + e["size"]
+            name = e["node"]["name"]
+            by_bytes[name] = by_bytes.get(name, 0) + e["size"]
+            # GitHub ships an official colour per language. Using it means the
+            # colour on the bar carries information instead of decoration, and
+            # the same language reads the same in both columns.
+            if e["node"].get("color"):
+                colours[name] = e["node"]["color"]
         if edges:
             primary = edges[0]["node"]["name"]
             by_repo[primary] = by_repo.get(primary, 0) + 1
     rank_b = sorted(by_bytes.items(), key=lambda kv: (-kv[1], kv[0]))
     rank_r = sorted(by_repo.items(), key=lambda kv: (-kv[1], kv[0]))
     return (rank_b[:top], sum(by_bytes.values()),
-            rank_r[:top], sum(by_repo.values()))
+            rank_r[:top], sum(by_repo.values()), colours)
 
 
 def fmt(d: date) -> str:
@@ -284,7 +291,7 @@ def streak_svg(s: dict) -> str:
                f"current streak {s['current']} days, longest {s['longest']} days")
 
 
-def langs_svg(by_bytes, total_b, by_repo, total_r) -> str:
+def langs_svg(by_bytes, total_b, by_repo, total_r, colours) -> str:
     rows = max(len(by_bytes), len(by_repo))
     h = 62.0 + rows * 26.0
     total_b = total_b or 1
@@ -294,30 +301,31 @@ def langs_svg(by_bytes, total_b, by_repo, total_r) -> str:
     css = (
         BASE_CSS
         + ".track{fill:var(--rule);}"
-        + ".barA{fill:var(--accent);}"
-        + ".barB{fill:var(--cool);}"
         + ".pct{font-family:'JBMui',monospace;font-size:11px;fill:var(--dim);}"
-        + ".name{font-family:'JBM',monospace;font-size:12px;fill:var(--ink);}"
+        + ".name{font-family:'JBMui',monospace;font-size:12px;fill:var(--ink);}"
     )
     body = [
         '<text class="lbl" x="24" y="30">by bytes written</text>',
         f'<text class="lbl" x="{WIDTH / 2 + 16:.0f}" y="30">by repositories</text>',
     ]
-    for col, (data, total, cls) in enumerate(
-            ((by_bytes, total_b, "barA"), (by_repo, total_r, "barB"))):
+    for col, (data, total) in enumerate(((by_bytes, total_b), (by_repo, total_r))):
         x0 = 24.0 + col * (WIDTH / 2 - 8)
         for i, (name, val) in enumerate(data):
             y = 56.0 + i * 26.0
             frac = val / total
             bar_x = x0 + 116
             bar_w = col_w - 170
+            # GitHub ships an official colour per language, so the bar carries
+            # information rather than decoration and the same language reads
+            # the same in both columns. Fall back to the accent if it has none.
+            fill = colours.get(name) or "var(--accent)"
             body.append(
                 f'<text class="name" x="{x0:.0f}" y="{y + 9:.0f}">'
                 f'{esc(label_of(name))}</text>'
                 f'<rect class="track" x="{bar_x:.0f}" y="{y:.0f}" '
                 f'width="{bar_w:.0f}" height="8" rx="4"/>'
-                f'<rect class="{cls}" x="{bar_x:.0f}" y="{y:.0f}" '
-                f'width="{max(bar_w * frac, 2):.1f}" height="8" rx="4"/>'
+                f'<rect fill="{esc(fill)}" x="{bar_x:.0f}" y="{y:.0f}" '
+                f'width="{max(bar_w * frac, 3):.1f}" height="8" rx="4"/>'
                 f'<text class="pct" x="{bar_x + bar_w + 10:.0f}" y="{y + 8:.0f}">'
                 f'{frac * 100:.1f}%</text>'
             )
@@ -393,14 +401,14 @@ def main() -> int:
 
     calendar, repos = fetch(login, token)
     series = days(calendar)
-    by_bytes, total_b, by_repo, total_r = languages(repos)
+    by_bytes, total_b, by_repo, total_r, colours = languages(repos)
 
     out = ROOT / "assets"
     out.mkdir(exist_ok=True)
     written = {
         "stats.svg": stats_svg(series, calendar),
         "streak.svg": streak_svg(streaks(series)),
-        "langs.svg": langs_svg(by_bytes, total_b, by_repo, total_r),
+        "langs.svg": langs_svg(by_bytes, total_b, by_repo, total_r, colours),
         "year.svg": year_svg(series),
     }
     for name, content in written.items():
