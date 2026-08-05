@@ -14,6 +14,15 @@ single night:
   2. Repositories are filtered to privacy: PUBLIC. A personal token sees
      private repos and the workflow's token does not, so without this the
      language percentages disagree depending on who ran the script.
+
+Worth knowing: the built-in GITHUB_TOKEN does NOT return the same contribution
+total as a personal token. Measured on this account, a personal token reports
+411 and the workflow token reports 46 — the difference is private-repo
+activity. 46 is what github.com/users/<login>/contributions serves to an
+anonymous visitor, so it is the number that matches what people actually see,
+and every label here says "public" to keep the claim honest. Feeding this a
+personal access token would show the larger figure, at the cost of publishing a
+count nobody can verify.
 """
 import json
 import os
@@ -232,7 +241,7 @@ def stats_svg(series, calendar) -> str:
         + ".base{stroke:var(--rule);stroke-width:1;}"
     )
     body = (
-        f'<text class="lbl" x="{pad_l}" y="34">contributions · last 365 days</text>'
+        f'<text class="lbl" x="{pad_l}" y="34">public contributions · last 365 days</text>'
         f'<text class="huge" x="{pad_l}" y="96">{total:,}</text>'
         f'<text class="lbl" x="{pad_l}" y="126">{active} active days</text>'
         f'<text class="lbl" x="{pad_l}" y="146">peak {busiest[1]} on '
@@ -248,7 +257,8 @@ def stats_svg(series, calendar) -> str:
         f'text-anchor="end">now</text>'
     )
     return svg(WIDTH, h, body, css,
-               f"{total} contributions in the last 365 days, {active} active days")
+               f"{total} public contributions in the last 365 days, "
+               f"{active} active days")
 
 
 def streak_svg(s: dict) -> str:

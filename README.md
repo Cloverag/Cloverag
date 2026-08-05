@@ -40,13 +40,17 @@ Detecting road surface damage from camera input and serving the results.<br>
 
 <img src="assets/hd-activity.svg" width="840" alt="activity">
 
-<img src="assets/stats.svg" width="840" alt="contributions in the last 365 days">
+<img src="assets/stats.svg" width="840" alt="public contributions in the last 365 days">
 
 <img src="assets/streak.svg" width="840" alt="current and longest contribution streak">
 
 <img src="assets/langs.svg" width="840" alt="top languages by bytes written and by repository">
 
 <img src="assets/year.svg" width="460" alt="the year at one character per day">
+
+<sub>These count public activity only — the same figures
+<a href="https://github.com/users/Cloverag/contributions">GitHub serves to an
+anonymous visitor</a> — so anyone can check them against the source.</sub>
 
 <img src="assets/hd-elsewhere.svg" width="840" alt="elsewhere">
 

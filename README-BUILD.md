@@ -60,3 +60,15 @@ SVG carries its own copy.
 
 The portrait pipeline follows the ASCII Portrait README Guide, and the overall
 approach follows "A GitHub profile that generates itself".
+
+## the GITHUB_TOKEN caveat
+
+The built-in `GITHUB_TOKEN` does not return the same contribution total as a
+personal token. On this account a personal token reports 411 and the workflow
+token reports 46; the gap is private-repo activity.
+
+46 is what `github.com/users/<login>/contributions` serves to an anonymous
+visitor, so it is the figure that matches what a reader can independently
+check. Every label says "public" for that reason. Supplying a personal access
+token instead would show the larger number at the cost of publishing a count
+nobody else can verify.
