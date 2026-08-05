@@ -1,3 +1,8 @@
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/portrait-dark.svg">
+  <img src="assets/portrait-light.svg" width="460" alt="portrait, drawn in ASCII">
+</picture>
+
 <img src="assets/hero.svg" width="460" alt="raghav">
 
 > B.Tech in Data Science &amp; Analytics at IIIT Nagpur, final year.

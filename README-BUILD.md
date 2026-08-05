@@ -26,8 +26,9 @@ These outputs are committed and regenerated only when you want them to change:
     # section headings
     python3 scripts/generate_headings.py
 
-    # an ASCII portrait, if you have a photo that suits it
-    python3 scripts/generate_portrait.py photo.jpg
+    # the portrait, as it currently stands
+    python3 scripts/generate_portrait.py "Green pfp (!.jpeg" \
+        --crop 0.24,0.03,0.70,0.50 --invert --blank 3
 
 ## what GitHub allows
 
@@ -72,3 +73,30 @@ visitor, so it is the figure that matches what a reader can independently
 check. Every label says "public" for that reason. Supplying a personal access
 token instead would show the larger number at the cost of publishing a count
 nobody else can verify.
+
+## why the portrait is two files
+
+Density is the encoding in ASCII art, and density does not survive a colour
+swap. On a dark page the ink is light, so the lit side of the face has to be
+the *dense* side or the face reads as a hole. On a light page the ink is dark
+and the ramp has to run the other way.
+
+So `generate_portrait.py` writes `portrait-light.svg` and `portrait-dark.svg`
+with opposite ramps and fixed fills, and the README picks between them with
+`<picture>` + `media="(prefers-color-scheme: dark)"` — both of which survive
+the sanitiser, verified against `POST /markdown`.
+
+`--invert` describes the *source*: a dark subject on a light background, which
+is what an ink drawing or a manga panel is. The dark variant flips it.
+
+## choosing a source image
+
+Three were tried. What decided it:
+
+* A halftone close-up rendered as an even field — the dot screen averages to
+  one mid-tone at 90 columns, and there is nothing left to draw with.
+* A 240px pixel-art sprite oversampled badly: each sprite pixel became about
+  three characters, so every edge came out as a blocky triple. It would need
+  roughly 40 columns, which is too small to lead a page.
+* The manga portrait won: real tonal range, a face that survives cropping to
+  fill the frame, and a light backdrop that `--blank 3` clears to empty page.

@@ -103,20 +103,27 @@ def esc(s: str) -> str:
 
 def svg(width: float, height: float, body: str, css: str, title: str,
         fonts: tuple[str, ...] = ("ui",),
-        display_width: float | None = None) -> str:
+        display_width: float | None = None,
+        theme_switch: bool = True) -> str:
     """Wrap a body in a root <svg>. width/height are the coordinate system;
     display_width is what the README renders it at.
 
     `fonts` are emitted once, outside the theme duplication — a base64 face
     repeated inside the dark block would double the file for nothing.
+
+    `theme_switch=False` emits the CSS verbatim, for files that are already
+    committed to one theme. An ASCII portrait cannot switch on colour alone:
+    density is the encoding, so a light-on-dark and a dark-on-light rendering
+    need opposite ramps and therefore separate files behind a <picture>.
     """
     dw = f' width="{display_width:.0f}"' if display_width else ""
     faces = "".join(font_face(f) for f in fonts)
+    style = themed(css) if theme_switch else paint(css, "light")
     return (
         f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {width:.2f} {height:.2f}"'
         f'{dw} role="img" aria-label="{esc(title)}">'
         f"<title>{esc(title)}</title>"
-        f"<style>{faces}{themed(css)}</style>"
+        f"<style>{faces}{style}</style>"
         f"{body}</svg>"
     )
 

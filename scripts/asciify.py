@@ -11,12 +11,17 @@ from svgkit import RAMP
 def to_rows(lum: np.ndarray, mask: np.ndarray | None, cols: int,
             aspect: float = 0.48, coverage: float = 0.35,
             lo_pct: float = 2.0, hi_pct: float = 98.0,
-            invert: bool = False) -> list[str]:
+            invert: bool = False, blank_below: int = 0) -> list[str]:
     """Downsample to a character grid.
 
     `mask` marks which pixels are subject rather than background. Contrast is
     stretched across the subject only — stretching across the whole frame lets
     a bright background eat the range and the face renders as a flat mid-tone.
+
+    `blank_below` drops the faintest N ramp levels to spaces. On artwork with a
+    plain light backdrop this is what separates subject from page: without it
+    the background renders as an even field of dots and the portrait sits in a
+    grey rectangle instead of on the README.
     """
     h, w = lum.shape
     if mask is None:
@@ -50,6 +55,9 @@ def to_rows(lum: np.ndarray, mask: np.ndarray | None, cols: int,
             if invert:
                 v = 1.0 - v
             idx = int(round(v * (len(RAMP) - 1)))
+            if idx <= blank_below:
+                line.append(" ")
+                continue
             # A covered cell never renders as blank; blank means "not subject".
             line.append(RAMP[max(idx, 1)])
         out.append("".join(line).rstrip())
