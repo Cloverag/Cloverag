@@ -20,15 +20,19 @@ These outputs are committed and regenerated only when you want them to change:
     # subset the typeface (needed if you change any label text)
     python3 scripts/build_fonts.py path/to/JetBrainsMono-Regular.ttf
 
-    # the wordmark
-    python3 scripts/generate_hero.py path/to/JetBrainsMono-Regular.ttf
-
     # section headings
     python3 scripts/generate_headings.py
 
-    # the portrait, as it currently stands
+    # the three header pieces, as they currently stand
     python3 scripts/generate_portrait.py "Green pfp (!.jpeg" \
-        --crop 0.24,0.03,0.70,0.50 --invert --blank 3
+        --crop 0.24,0.03,0.70,0.50 --flood 14 --blank 1 \
+        --colour --cols 60 --width 270 --name face
+
+    python3 scripts/generate_portrait.py Knight_16.webp \
+        --colour --cols 60 --width 270 --name knight
+
+    python3 scripts/generate_portrait.py _.jpeg --blur 6 \
+        --colour --cols 60 --width 270 --name eye
 
 ## what GitHub allows
 
@@ -74,20 +78,30 @@ check. Every label says "public" for that reason. Supplying a personal access
 token instead would show the larger number at the cost of publishing a count
 nobody else can verify.
 
-## why the portrait is two files
+## colour, and why one file now covers both themes
 
-Density is the encoding in ASCII art, and density does not survive a colour
-swap. On a dark page the ink is light, so the lit side of the face has to be
-the *dense* side or the face reads as a hole. On a light page the ink is dark
-and the ramp has to run the other way.
+In monochrome the portrait needed two files. Density is the encoding, and
+density does not survive a colour swap: on a dark ground the lit side of the
+face has to be the *dense* side or the face reads as a hole, and on a light
+ground the ramp runs the other way.
 
-So `generate_portrait.py` writes `portrait-light.svg` and `portrait-dark.svg`
-with opposite ramps and fixed fills, and the README picks between them with
-`<picture>` + `media="(prefers-color-scheme: dark)"` — both of which survive
-the sanitiser, verified against `POST /markdown`.
+With `--colour` that goes away. Each character takes its colour from the
+matching cell of the source, so the drawing carries its own values and one
+file serves both grounds.
 
-`--invert` describes the *source*: a dark subject on a light background, which
-is what an ink drawing or a manga panel is. The dark variant flips it.
+Two things make per-character colour work here rather than turn to static:
+
+* **Quantising** to ten colours. Flat artwork collapses into a few regions, so
+  the result reads as the drawing instead of as noise — and long single-colour
+  runs compress into one `<tspan>` each rather than one per character.
+* **Remapping value, keeping hue.** A colour lifted straight off the source
+  paints near-black glyphs on a near-black README. Hue and saturation are what
+  make it read as *that* image, so they survive; value is forced into a narrow
+  central band (0.40–0.72) that holds up on white and on #0d1117 alike.
+
+The general warning still stands — per-character colour on a *photograph*
+degenerates into static. It works here because all three sources are
+flat-palette artwork.
 
 ## choosing a source image
 
@@ -100,3 +114,23 @@ Three were tried. What decided it:
   roughly 40 columns, which is too small to lead a page.
 * The manga portrait won: real tonal range, a face that survives cropping to
   fill the frame, and a light backdrop that `--blank 3` clears to empty page.
+
+## the flags, and which source needs which
+
+    --crop l,t,r,b   fractions of the frame; crop tight or the face gets no
+                     characters to work with
+    --flood TOL      drop the background by flooding in from the corners.
+                     Needs a backdrop whose value differs from the subject
+    --rembg          semantic segmentation instead, for when it does not
+    --blur R         low-pass first. The fix for halftone or dithered art:
+                     the dot screen aliases against the character grid
+    --blank N        render the N faintest ramp levels as empty space
+    --colour         per-character colour from the source
+    --palette N      colours to quantise to (default 10)
+    --invert         source is a dark subject on a light background
+    --cols / --width grid columns, and rendered width in the README
+
+`face` needs `--flood 14`, because the backdrop is a flat light green that a
+corner flood separates cleanly. `knight` needs nothing — it ships its own alpha
+channel, which is used directly. `eye` needs `--blur 6`, because it is a
+halftone and the dots alias into an even grey field without it.

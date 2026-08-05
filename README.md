@@ -1,9 +1,4 @@
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/portrait-dark.svg">
-  <img src="assets/portrait-light.svg" width="460" alt="portrait, drawn in ASCII">
-</picture>
-
-<img src="assets/hero.svg" width="460" alt="raghav">
+<img src="assets/face.svg" width="270" alt="portrait, drawn in ASCII"><img src="assets/knight.svg" width="270" alt="knight sprite, drawn in ASCII"><img src="assets/eye.svg" width="270" alt="halftone eye, drawn in ASCII">
 
 > B.Tech in Data Science &amp; Analytics at IIIT Nagpur, final year.
 > I build AI knowledge systems — knowledge graphs, vector search and LLMs

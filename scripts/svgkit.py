@@ -128,6 +128,53 @@ def svg(width: float, height: float, body: str, css: str, title: str,
     )
 
 
+def _runs(chars: str, colours: list[str]) -> list[tuple[str, str]]:
+    """Collapse a row into (text, colour) runs. Spaces join whatever run they
+    land in — they paint nothing, so splitting a run around them would only add
+    markup."""
+    out: list[list[str]] = []
+    for ch, col in zip(chars, colours):
+        if out and (ch == " " or out[-1][1] == col):
+            out[-1][0] += ch
+        else:
+            out.append([ch, col])
+    return [(t, c) for t, c in out]
+
+
+def typed_rows_colour(grid: list[list[str]], colours: list[list[str]],
+                      x: float, y0: float, cls: str = "r",
+                      stagger: float = 0.09, dur: float = 0.55) -> str:
+    """Typed rows where each cell carries its own colour.
+
+    Same wipe as the monochrome version — the colour lives in <tspan> runs
+    inside each row's <text>, so the clip animation is untouched.
+    """
+    out, defs = [], []
+    rows = ["".join(r) for r in grid]
+    for i, row in enumerate(rows):
+        w = len(row) * CHAR_W
+        defs.append(
+            f'<clipPath id="c{i}"><rect x="{x:.2f}" y="{y0 + i * LINE_H - LINE_H:.2f}" '
+            f'height="{LINE_H * 1.6:.2f}" width="{w:.2f}">'
+            f'<animate attributeName="width" from="0" to="{w:.2f}" '
+            f'dur="{dur:.2f}s" begin="{i * stagger:.2f}s" fill="freeze"/>'
+            f"</rect></clipPath>"
+        )
+    out.append("<defs>" + "".join(defs) + "</defs>")
+    for i, row in enumerate(rows):
+        if not row.strip():
+            continue
+        spans = "".join(
+            f'<tspan fill="{col}">{esc(text)}</tspan>'
+            for text, col in _runs(row, colours[i])
+        )
+        out.append(
+            f'<text class="{cls}" x="{x:.2f}" y="{y0 + i * LINE_H:.2f}" '
+            f'clip-path="url(#c{i})" xml:space="preserve">{spans}</text>'
+        )
+    return "".join(out)
+
+
 def typed_rows(rows: list[str], x: float, y0: float, cls: str = "r",
                stagger: float = 0.09, dur: float = 0.55,
                cursor: bool = True) -> str:

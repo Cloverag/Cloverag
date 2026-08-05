@@ -32,9 +32,9 @@ from PIL import Image
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from asciify import luminance, to_rows  # noqa: E402
+from asciify import cell_colours, luminance, to_rows  # noqa: E402
 from svgkit import (CHAR_W, FONT_SIZE, LINE_H, ROOT, THEME, svg,  # noqa: E402
-                    typed_rows)
+                    typed_rows, typed_rows_colour)
 
 # Below about 88 columns the face muddies; much above it and the block
 # dominates the page.
@@ -66,6 +66,38 @@ def cutout(img: Image.Image, use_rembg: bool):
     return np.asarray(out)[:, :, 3] > 128
 
 
+def flood_background(img: Image.Image, tol: int) -> np.ndarray:
+    """Mask the background by flooding inward from the four corners.
+
+    Only works when the backdrop is a different value from the subject. If they
+    share one — a dark cloak against a dark wall — the flood walks straight
+    through the subject and eats it, and no tolerance setting saves you. Check
+    the reported coverage: if it is tiny, the source is the problem.
+    """
+    from collections import deque
+
+    px = np.asarray(img.convert("RGB")).astype(np.int16)
+    h, w, _ = px.shape
+    bg = np.zeros((h, w), bool)
+    q = deque()
+    for sy, sx in ((0, 0), (0, w - 1), (h - 1, 0), (h - 1, w - 1)):
+        if not bg[sy, sx]:
+            bg[sy, sx] = True
+            q.append((sy, sx))
+    while q:
+        y, x = q.popleft()
+        seed = px[y, x]
+        for dy, dx in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+            ny, nx = y + dy, x + dx
+            if 0 <= ny < h and 0 <= nx < w and not bg[ny, nx]:
+                if np.abs(px[ny, nx] - seed).max() <= tol:
+                    bg[ny, nx] = True
+                    q.append((ny, nx))
+    keep = ~bg
+    print(f"flood removed background: {keep.mean():.0%} of the frame kept")
+    return keep
+
+
 def parse_crop(spec: str, size: tuple[int, int]) -> tuple[int, int, int, int]:
     """`l,t,r,b` as fractions of the frame, e.g. 0.24,0.03,0.70,0.50."""
     parts = [float(v) for v in spec.split(",")]
@@ -92,8 +124,25 @@ def main() -> int:
     ap.add_argument("--cols", type=int, default=COLS)
     ap.add_argument("--rembg", action="store_true",
                     help="segment the subject with rembg (~176 MB model, once)")
+    ap.add_argument("--flood", type=int, default=0, metavar="TOL",
+                    help="drop the background by flooding in from the corners. "
+                         "Needs a backdrop whose value differs from the subject.")
     ap.add_argument("--name", default="portrait",
-                    help="basename; writes <name>-light.svg and <name>-dark.svg")
+                    help="basename; writes <name>-light.svg and <name>-dark.svg, "
+                         "or a single <name>.svg with --colour")
+    ap.add_argument("--colour", "--color", dest="colour", action="store_true",
+                    help="take each character's colour from the source image. "
+                         "Only worth it on flat-palette artwork; on a photo it "
+                         "degenerates into static.")
+    ap.add_argument("--palette", type=int, default=10,
+                    help="colours to quantise to when --colour is on")
+    ap.add_argument("--width", type=int, default=DISPLAY_W,
+                    help="rendered width in the README")
+    ap.add_argument("--blur", type=float, default=0.0, metavar="R",
+                    help="Gaussian blur before sampling. The right fix for a "
+                         "halftone or dithered source: the dot screen aliases "
+                         "against the character grid, and a low-pass turns it "
+                         "back into the continuous tone it was standing in for.")
     args = ap.parse_args()
 
     src = Path(args.photo)
@@ -114,7 +163,40 @@ def main() -> int:
               f"artwork; on a photo expect thin features to average away.")
 
     mask = cutout(img, args.rembg)
-    lum = luminance(np.asarray(img.convert("RGB")).astype(np.float64))
+    if mask is None and args.flood:
+        mask = flood_background(img, args.flood)
+    if args.blur:
+        from PIL import ImageFilter
+        # After the mask, so blurring cannot bleed the background into the
+        # subject's edge.
+        img = img.filter(ImageFilter.GaussianBlur(args.blur))
+    rgb = np.asarray(img.convert("RGB"))
+    lum = luminance(rgb.astype(np.float64))
+
+    if args.colour:
+        # With colour doing the work, density no longer has to flip per theme:
+        # the drawing carries its own values, so one file serves both grounds.
+        rows = to_rows(lum, mask, cols=args.cols, invert=args.invert,
+                       coverage=0.2, blank_below=args.blank)
+        grid = [list(r.ljust(args.cols)) for r in rows]
+        cols_grid = cell_colours(rgb, mask, args.cols, len(rows),
+                                 palette=args.palette)
+        width = args.cols * CHAR_W
+        top = LINE_H
+        height = top + len(rows) * LINE_H + LINE_H * 0.6
+        css = (f".r{{font-family:'JBMramp',monospace;font-size:{FONT_SIZE}px;"
+               "white-space:pre;}")
+        body = typed_rows_colour(grid, cols_grid, x=0, y0=top)
+        out = ROOT / "assets" / f"{args.name}.svg"
+        out.write_text(svg(width, height, body, css,
+                           f"{args.name}, drawn in ASCII", fonts=("ramp",),
+                           display_width=args.width, theme_switch=False))
+        distinct = len({c for row in cols_grid for c in row})
+        total = (len(rows) - 1) * 0.09 + 0.55
+        print(f"{out.relative_to(ROOT)}  {len(rows)}x{args.cols}  "
+              f"{distinct} colours  {out.stat().st_size / 1024:.1f} KB  "
+              f"types in {total:.1f}s")
+        return 0
 
     # Density is the encoding, and it does not survive a colour swap. On a dark
     # page the ink is light, so the lit side of the subject has to be the dense
@@ -136,7 +218,7 @@ def main() -> int:
         body = typed_rows(rows, x=0, y0=top)
         out = ROOT / "assets" / f"{args.name}-{theme}.svg"
         out.write_text(svg(width, height, body, css, "portrait, drawn in ASCII",
-                           fonts=("ramp",), display_width=DISPLAY_W,
+                           fonts=("ramp",), display_width=args.width,
                            theme_switch=False))
         total = (len(rows) - 1) * 0.09 + 0.55
         print(f"{out.relative_to(ROOT)}  {len(rows)} rows x {args.cols} cols  "
