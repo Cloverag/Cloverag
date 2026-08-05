@@ -136,6 +136,16 @@ def main() -> int:
                          "degenerates into static.")
     ap.add_argument("--palette", type=int, default=10,
                     help="colours to quantise to when --colour is on")
+    ap.add_argument("--contrast", type=float, default=2.0, metavar="PCT",
+                    help="percentile clipped off each end before mapping to the "
+                         "ramp. Higher clips harder, so more cells land on the "
+                         "extremes and the tonal separation widens. Default 2.")
+    ap.add_argument("--band", default="0.40,0.72", metavar="LO,HI",
+                    help="brightness band the sampled colours are remapped "
+                         "into. Widen for punchier colour, at the cost of the "
+                         "extremes washing out on one ground or the other.")
+    ap.add_argument("--saturation", type=float, default=1.45, metavar="X",
+                    help="saturation multiplier on the sampled colours")
     ap.add_argument("--width", type=int, default=DISPLAY_W,
                     help="rendered width in the README")
     ap.add_argument("--blur", type=float, default=0.0, metavar="R",
@@ -177,10 +187,13 @@ def main() -> int:
         # With colour doing the work, density no longer has to flip per theme:
         # the drawing carries its own values, so one file serves both grounds.
         rows = to_rows(lum, mask, cols=args.cols, invert=args.invert,
-                       coverage=0.2, blank_below=args.blank)
+                       coverage=0.2, blank_below=args.blank,
+                       lo_pct=args.contrast, hi_pct=100.0 - args.contrast)
         grid = [list(r.ljust(args.cols)) for r in rows]
+        lo, hi = (float(v) for v in args.band.split(","))
         cols_grid = cell_colours(rgb, mask, args.cols, len(rows),
-                                 palette=args.palette)
+                                 palette=args.palette, band=(lo, hi),
+                                 sat_boost=args.saturation)
         width = args.cols * CHAR_W
         top = LINE_H
         height = top + len(rows) * LINE_H + LINE_H * 0.6
@@ -204,7 +217,8 @@ def main() -> int:
     # ramp has to run the other way. Two renderings, one per theme.
     for theme, flip in (("light", args.invert), ("dark", not args.invert)):
         rows = to_rows(lum, mask, cols=args.cols, invert=flip,
-                       coverage=0.2, blank_below=args.blank)
+                       coverage=0.2, blank_below=args.blank,
+                       lo_pct=args.contrast, hi_pct=100.0 - args.contrast)
         width = args.cols * CHAR_W
         top = LINE_H
         height = top + len(rows) * LINE_H + LINE_H * 0.6

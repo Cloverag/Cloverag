@@ -74,7 +74,9 @@ def luminance(rgb: np.ndarray) -> np.ndarray:
 
 
 def cell_colours(rgb: np.ndarray, mask: np.ndarray | None, cols: int,
-                 rows: int, palette: int = 10) -> list[list[str]]:
+                 rows: int, palette: int = 10,
+                 band: tuple[float, float] = (0.40, 0.72),
+                 sat_boost: float = 1.45) -> list[list[str]]:
     """Average colour per character cell, quantised to a small palette.
 
     Quantising is not only about file size. Long runs of one colour are what
@@ -105,7 +107,8 @@ def cell_colours(rgb: np.ndarray, mask: np.ndarray | None, cols: int,
     small = Image.fromarray(means, "RGB").quantize(colors=palette, method=Image.MEDIANCUT)
     pal = small.getpalette()
     idx = np.asarray(small)
-    table = [_readable(pal[i * 3], pal[i * 3 + 1], pal[i * 3 + 2])
+    table = [_readable(pal[i * 3], pal[i * 3 + 1], pal[i * 3 + 2],
+                       band=band, sat_boost=sat_boost)
              for i in range(palette)]
     return [[table[i] for i in row] for row in idx]
 
