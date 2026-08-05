@@ -1,0 +1,45 @@
+name: refresh stats
+
+on:
+  schedule:
+    - cron: "17 5 * * *"
+  workflow_dispatch:
+  # Deliberately no `push` trigger — this job commits, and a push trigger
+  # would re-run it on its own commit.
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-stats
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # No personal access token. The built-in GITHUB_TOKEN returns the same
+      # numbers, because the query only ever asks for public data.
+      - name: draw
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_LOGIN: ${{ github.repository_owner }}
+        run: python3 scripts/generate_stats.py
+
+      - name: commit if changed
+        run: |
+          FILES="assets/stats.svg assets/streak.svg assets/langs.svg assets/year.svg"
+          # An `if` block, not `[ -z ... ] && exit 0`: the default shell is
+          # `bash -e`, so on the "there are changes" path that one-liner would
+          # end on a false test and fail the step.
+          if [ -z "$(git status --porcelain -- $FILES)" ]; then
+            echo "no change — nothing to commit"
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- $FILES
+          git commit -m "stats: refresh"
+          git push
