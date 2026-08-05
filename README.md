@@ -1,4 +1,7 @@
-<img src="assets/face.svg" width="460" alt="portrait, drawn in ASCII">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/face-dark.svg">
+  <img src="assets/face-light.svg" width="460" alt="portrait, drawn in ASCII">
+</picture>
 
 > B.Tech in Data Science &amp; Analytics at IIIT Nagpur, final year.
 > I build AI knowledge systems — knowledge graphs, vector search and LLMs

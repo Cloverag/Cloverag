@@ -140,10 +140,10 @@ def main() -> int:
                     help="percentile clipped off each end before mapping to the "
                          "ramp. Higher clips harder, so more cells land on the "
                          "extremes and the tonal separation widens. Default 2.")
-    ap.add_argument("--band", default="0.40,0.72", metavar="LO,HI",
-                    help="brightness band the sampled colours are remapped "
-                         "into. Widen for punchier colour, at the cost of the "
-                         "extremes washing out on one ground or the other.")
+    ap.add_argument("--band-dark", default="0.42,0.84", metavar="LO,HI",
+                    help="brightness band for the dark-theme rendering")
+    ap.add_argument("--band-light", default="0.20,0.56", metavar="LO,HI",
+                    help="brightness band for the light-theme rendering")
     ap.add_argument("--saturation", type=float, default=1.45, metavar="X",
                     help="saturation multiplier on the sampled colours")
     ap.add_argument("--width", type=int, default=DISPLAY_W,
@@ -190,25 +190,30 @@ def main() -> int:
                        coverage=0.2, blank_below=args.blank,
                        lo_pct=args.contrast, hi_pct=100.0 - args.contrast)
         grid = [list(r.ljust(args.cols)) for r in rows]
-        lo, hi = (float(v) for v in args.band.split(","))
-        cols_grid = cell_colours(rgb, mask, args.cols, len(rows),
-                                 palette=args.palette, band=(lo, hi),
-                                 sat_boost=args.saturation)
         width = args.cols * CHAR_W
         top = LINE_H
         height = top + len(rows) * LINE_H + LINE_H * 0.6
         css = (f".r{{font-family:'JBMramp',monospace;font-size:{FONT_SIZE}px;"
                "white-space:pre;}")
-        body = typed_rows_colour(grid, cols_grid, x=0, y0=top)
-        out = ROOT / "assets" / f"{args.name}.svg"
-        out.write_text(svg(width, height, body, css,
-                           f"{args.name}, drawn in ASCII", fonts=("ramp",),
-                           display_width=args.width, theme_switch=False))
-        distinct = len({c for row in cols_grid for c in row})
-        total = (len(rows) - 1) * 0.09 + 0.55
-        print(f"{out.relative_to(ROOT)}  {len(rows)}x{args.cols}  "
-              f"{distinct} colours  {out.stat().st_size / 1024:.1f} KB  "
-              f"types in {total:.1f}s")
+
+        # Hue survives; only the value mapping differs between the two. A large
+        # near-desaturated region — a pale backdrop — cannot be made legible on
+        # white by saturation, only by darkening, and darkening it is exactly
+        # what sinks it into the dark theme. One band cannot serve both, so
+        # each ground gets its own.
+        for theme, spec in (("dark", args.band_dark), ("light", args.band_light)):
+            lo, hi = (float(v) for v in spec.split(","))
+            cols_grid = cell_colours(rgb, mask, args.cols, len(rows),
+                                     palette=args.palette, band=(lo, hi),
+                                     sat_boost=args.saturation)
+            body = typed_rows_colour(grid, cols_grid, x=0, y0=top)
+            out = ROOT / "assets" / f"{args.name}-{theme}.svg"
+            out.write_text(svg(width, height, body, css,
+                               f"{args.name}, drawn in ASCII", fonts=("ramp",),
+                               display_width=args.width, theme_switch=False))
+            print(f"{out.relative_to(ROOT)}  {len(rows)}x{args.cols}  "
+                  f"{out.stat().st_size / 1024:.1f} KB")
+        print(f"types in {(len(rows) - 1) * 0.09 + 0.55:.1f}s")
         return 0
 
     # Density is the encoding, and it does not survive a colour swap. On a dark

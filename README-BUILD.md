@@ -25,9 +25,9 @@ These outputs are committed and regenerated only when you want them to change:
 
     # the header portrait, as it currently stands
     python3 scripts/generate_portrait.py "Green pfp (!.jpeg" \
-        --crop 0.24,0.03,0.70,0.50 --flood 14 --blank 1 \
+        --crop 0.24,0.03,0.70,0.50 \
         --colour --cols 90 --width 460 --name face \
-        --contrast 14 --band 0.28,0.86 --saturation 1.6
+        --contrast 2 --saturation 1.7
 
 ## what GitHub allows
 
@@ -73,16 +73,18 @@ check. Every label says "public" for that reason. Supplying a personal access
 token instead would show the larger number at the cost of publishing a count
 nobody else can verify.
 
-## colour, and why one file now covers both themes
+## colour, and why it is still two files
 
-In monochrome the portrait needed two files. Density is the encoding, and
-density does not survive a colour swap: on a dark ground the lit side of the
-face has to be the *dense* side or the face reads as a hole, and on a light
-ground the ramp runs the other way.
+Each character takes its colour from the matching cell of the source. The
+*characters* are identical between the two files — same ramp, same density —
+and only the value mapping differs.
 
-With `--colour` that goes away. Each character takes its colour from the
-matching cell of the source, so the drawing carries its own values and one
-file serves both grounds.
+It has to. The backdrop in this source is large and almost completely
+desaturated. A near-grey can only be made legible on white by darkening it,
+and darkening it is exactly what sinks it into a #0d1117 page. Saturation
+cannot rescue a colour that has none. So each ground gets its own band —
+`--band-dark 0.42,0.84` and `--band-light 0.20,0.56` — and `<picture>` with
+`media="(prefers-color-scheme: dark)"` picks between them.
 
 Two things make per-character colour work here rather than turn to static:
 
@@ -127,13 +129,15 @@ Three were tried. What decided it:
     --contrast PCT   percentile clipped off each end before mapping to the
                      ramp. Higher clips harder, so more cells land on the
                      extremes and the tonal separation widens
-    --band LO,HI     brightness band the sampled colours are remapped into.
-                     Widen for punchier colour; too wide and the extremes
-                     wash out on one ground or the other
+    --band-dark      brightness band for the dark-theme rendering
+    --band-light     brightness band for the light-theme rendering
     --saturation X   saturation multiplier on the sampled colours
 
-The portrait needs `--flood 14`, because the backdrop is a flat light green
-that a corner flood separates cleanly.
+The portrait deliberately uses **no** `--flood` and **no** `--blank`, and
+clips only 2% off each end. Flooding the backdrop away and clipping hard makes
+a cleaner silhouette, but it throws out most of the characters on the page —
+the density *is* the texture, and the version with the backdrop left in reads
+as a far richer drawing. `--flood 14` still works if you want the silhouette.
 
 Two other sources were tried and dropped. A pixel-art sprite needed no masking
 at all — it ships its own alpha channel, which `cutout()` uses directly — but
