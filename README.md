@@ -20,9 +20,11 @@ A Neo4j knowledge graph and pgvector semantic search answer together, so<br>
 every answer carries a path back to the document it came from.<br>
 <samp>Neo4j · pgvector · Python · Claude</samp> &nbsp;·&nbsp; <sub>final year project</sub>
 
-**[Portfolio](https://github.com/Cloverag/portfolio)** — interactive site<br>
-A developer portfolio with a live shader-gradient background and 3D scenes.<br>
-<samp>Next.js · TypeScript · Three.js · Framer Motion</samp>
+**[Portfolio](https://raghav-singh-iiitn.vercel.app)** — everything, with receipts<br>
+A terminal for a homepage: every project I have shipped, each one carrying<br>
+the number that backs it. No framework and no build step, and the GitHub<br>
+figures on it are generated from the API rather than typed in by hand.<br>
+<samp>HTML · CSS · JavaScript</samp> &nbsp;·&nbsp; <sub><a href="https://github.com/Cloverag/portfolio">source</a></sub>
 
 **[Offensive Security Scripts](https://github.com/Cloverag/offensive-security-scripts)** — recon toolkit<br>
 A growing set of tools for recon and exploitation, written to understand<br>
@@ -57,6 +59,7 @@ anonymous visitor</a> — so anyone can check them against the source.</sub>
 
 <img src="assets/hd-elsewhere.svg" width="840" alt="elsewhere">
 
+[Site](https://raghav-singh-iiitn.vercel.app) &nbsp;·&nbsp;
 [LinkedIn](https://linkedin.com/in/raghav-singh-11b82a290) &nbsp;·&nbsp;
 [X](https://x.com/Raghav474782328) &nbsp;·&nbsp;
 [Instagram](https://instagram.com/raghavvv_64)
